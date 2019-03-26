@@ -102,6 +102,7 @@
                 padding:15px;
                 float:left;
                 width:300px;
+                height:20px;
             }
 
             .panel-status{
@@ -215,17 +216,14 @@
         <script>
             const octokit = new Octokit();
             $(".panel").html("");
-            octokit.repos.listForOrg({
-            org: 'bitfocus',
-            type: 'public'
-            }).then(({data, headers, status}) => {
+            octokit.paginate('GET /orgs/:org/repos', {org: "bitfocus"})
+            .then(data => {
                 console.log(data);
                 for(var i = 0; i < data.length; i++){
                     $(".panel").append('<div class="panel-item" url="'+data[i].html_url+'"><div class="panel-status '+(data[i].open_issues_count > 0 ? "yellow" : "green")+'"></div><div class="panel-title">'
                         +data[i].name+'</div><div class="panel-content"><span class="'+(data[i].open_issues_count > 0 ? "yellow" : "green")+' badge">'+data[i].open_issues_count+' Issues</span><span class="activity">Last activity '+timeago.format(new Date(data[i].pushed_at))+'</span></div></div>');
                 }
                 $(".panel-item").click(function(){
-                    console.log("testing");
                     window.open($(this).attr("url"));
                 });
             });
